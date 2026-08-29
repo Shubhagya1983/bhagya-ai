@@ -5,7 +5,7 @@ import io
 import os
 from PIL import Image
 
-# 1. API Key සැකසුම (Streamlit Secrets මඟින්)
+# 1. API Key සැකසුම
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # 2. භාග්‍ය AI හි අනන්‍යතාවය සහ කාර්මික විශේෂඥ දැනුම
@@ -13,10 +13,10 @@ system_instruction = (
     "ඔබේ නම 'භාග්‍ය' (Bhagya). ඔබව නිර්මාණය කළේ 'ශුභාග්‍ය' (Shubhagya) විසින්. "
     "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
     "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFDs, "
-    "Servo Motors, Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
-    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice) මඟින් හෝ Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් (Photo) මඟින් "
+    "Servo Motors සහ Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
+    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice) මඟින් හෝ WhatsApp/ගැලරියෙන් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
     "ගැටලුවක් ඉදිරිපත් කළ විට, ඊට අදාළ දෝෂය (Fault/Error Code), හේතුව (Reason) සහ නිවැරදි විසඳුම (Solution) "
-    "ඉතා පැහැදිලිව සිංහලෙන් (හෝ පරිශීලකයා ඇසූ භාෂාවෙන්) පියවරෙන් පියවර ලබා දෙන්න."
+    "ඉතා පැහැදිලිව සිංහලෙන් පියවරෙන් පියවර ලබා දෙන්න."
 )
 
 model = genai.GenerativeModel(
@@ -40,11 +40,12 @@ with col2:
 
 st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහත ඕනෑම ක්‍රමයක් භාවිත කරන්න.")
 
-# 5. ප්‍රධාන අංශ 3 (Tabs)
-tab1, tab2, tab3 = st.tabs([
-    "💬 පෙළින් ඇසීමට (Text)", 
-    "🎙️ කටහඬින් ඇසීමට (Voice Mic)", 
-    "📷 ඡායාරූපයෙන් ඇසීමට (Error Photo)"
+# 5. ප්‍රධාන අංශ (Tabs) - WhatsApp ෆොටෝ දැමීමට විශේෂ Tab එකක් සමඟ
+tab1, tab2, tab3, tab4 = st.tabs([
+    "💬 පෙළින් (Text)", 
+    "🎙️ කටහඬින් (Voice)", 
+    "📷 කැමරාවෙන් (Camera)",
+    "📱 WhatsApp / ගැලරි Photo"
 ])
 
 # --- TAB 1: TEXT CHAT ---
@@ -99,25 +100,51 @@ with tab2:
                 except Exception as e:
                     st.error(f"හඬ සැකසීමේ දෝෂයක් මතු විය: {e}")
 
-# --- TAB 3: CAMERA & IMAGE INPUT ---
+# --- TAB 3: CAMERA INPUT ---
 with tab3:
-    st.write("📷 VFD එකේ Error Code එක හෝ යන්ත්‍රයේ දෝෂය පෙන්වන පින්තූරයක් ලබා දෙන්න:")
+    st.write("📷 කැමරාවෙන් VFD Error එකක ඡායාරූපයක් ලබා ගන්න:")
     camera_photo = st.camera_input("කැමරාව ක්‍රියාත්මක කරන්න")
-    uploaded_photo = st.file_uploader("නැතහොත් ගැලරියෙන් Upload කරන්න", type=["jpg", "jpeg", "png"])
     
-    image_to_analyze = camera_photo if camera_photo else uploaded_photo
-    
-    if image_to_analyze is not None:
-        img = Image.open(image_to_analyze)
-        st.image(img, caption="ලබා දුන් ඡායාරූපය", width=300)
+    if camera_photo is not None:
+        img = Image.open(camera_photo)
+        st.image(img, caption="කැමරාවෙන් ගත් ඡායාරූපය", width=300)
         
-        if st.button("මෙම Error එක පරීක්ෂා කරන්න"):
+        if st.button("මෙම Error එක පරීක්ෂා කරන්න (Camera)"):
             with st.spinner('භාග්‍ය ඡායාරූපය විශ්ලේෂණය කරමින්...'):
                 try:
+                    prompt = "මෙම VFD Error Code එක හෝ යන්ත්‍රයේ ඡායාරූපය පරීක්ෂා කර, මෙහි ඇති Error Code එක, හේතුව (Reason) සහ විසඳුම (Solution) සිංහලෙන් පැහැදිලි කරන්න."
+                    response = model.generate_content([prompt, img])
+                    st.success(response.text)
+                    
+                    try:
+                        tts = gTTS(text=response.text, lang='si')
+                        audio_fp = io.BytesIO()
+                        tts.write_to_fp(audio_fp)
+                        st.audio(audio_fp, format='audio/mp3', autoplay=True)
+                    except Exception:
+                        pass
+                except Exception as e:
+                    st.error(f"දෝෂයක් මතු විය: {e}")
+
+# --- TAB 4: WHATSAPP / GALLERY PHOTO UPLOADER ---
+with tab4:
+    st.write("📱 **WhatsApp එකෙන් ලැබුණු හෝ Phone එකේ Save කරගත් Error පින්තූර මෙතැනට Upload කරන්න:**")
+    whatsapp_upload = st.file_uploader(
+        "WhatsApp Error Photo එක මෙතැනට Drag කරන්න හෝ Browse කරන්න", 
+        type=["jpg", "jpeg", "png", "webp"]
+    )
+    
+    if whatsapp_upload is not None:
+        img = Image.open(whatsapp_upload)
+        st.image(img, caption="Uploaded WhatsApp Error Photo", width=350)
+        
+        if st.button("🔍 WhatsApp ෆොටෝ එක Analyze කරන්න"):
+            with st.spinner('භාග්‍ය WhatsApp ඡායාරූපය පරීක්ෂා කරමින්...'):
+                try:
                     prompt = (
-                        "මෙම VFD Error Code එක හෝ යන්ත්‍රයේ ඡායාරූපය පරීක්ෂා කර, "
-                        "මෙහි ඇති Error Code එක, ඊට හේතුව (Reason) සහ ඊට අදාළ විසඳුම (Solution) "
-                        "සිංහලෙන් පැහැදිලිව පියවරෙන් පියවර විස්තර කරන්න."
+                        "මෙය WhatsApp හරහා ලැබුණු VFD Error එකක හෝ කාර්මික දෝෂයක ඡායාරූපයකි. "
+                        "මෙහි පෙනෙන Error Code එක හඳුනාගෙන, ඊට හේතුව (Reason) සහ කළ යුතු නිවැරදි කිරීම්/විසඳුම (Solution) "
+                        "සිංහලෙන් ඉතා පැහැදිලිව පියවරෙන් පියවර විස්තර කරන්න."
                     )
                     response = model.generate_content([prompt, img])
                     

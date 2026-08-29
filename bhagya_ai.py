@@ -22,7 +22,7 @@ system_instruction = (
 )
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     system_instruction=system_instruction
 )
 
@@ -70,7 +70,7 @@ with tab1:
                 except Exception as e:
                     if "429" in str(e) or "quota" in str(e).lower():
                         if attempt < MAX_RETRIES - 1:
-                            st.warning(f"⏳ පද්ධතිය කාර්යබහුලයි. තත්පර {RETRY_DELAY} කින් නැවත උත්සාහ කරයි...")
+                            st.warning(f"⏳ පද්ධතිය කාර්යබහුලයි. තත්පර {RETRY_DELAY} කින් ස්වයංක්‍රීයව නැවත උත්සාහ කරයි...")
                             time.sleep(RETRY_DELAY)
                         else:
                             st.error("API සීමාව ඉක්මවා ඇත. කරුණාකර මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න.")
@@ -136,7 +136,6 @@ with tab4:
 with tab5:
     st.write("📚 **පද්ධතියේ ගබඩා කර ඇති VFD Manuals වලින් ප්‍රශ්න අසන්න:**")
     
-    # vfd ෆෝල්ඩරයේ ඇති PDF ලැයිස්තුව ගැනීම
     folder_path = "vfd"
     if os.path.exists(folder_path):
         pdf_files = [f for f in os.listdir(folder_path) if f.endswith('.pdf')]
@@ -151,7 +150,6 @@ with tab5:
                     try:
                         pdf_reader = PyPDF2.PdfReader(pdf_file_path)
                         pdf_text = ""
-                        # මුල් පිටු 15 පමණක් කියවීම (වේගය වැඩි කිරීමට සහ API සීමා වළක්වා ගැනීමට)
                         for page in range(min(15, len(pdf_reader.pages))):
                             pdf_text += pdf_reader.pages[page].extract_text()
                         

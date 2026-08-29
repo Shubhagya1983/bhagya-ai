@@ -22,7 +22,7 @@ system_instruction = (
 )
 
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
+    model_name="gemini-3.6-flash",
     system_instruction=system_instruction
 )
 
@@ -105,7 +105,7 @@ with tab3:
         img = Image.open(camera_photo)
         st.image(img, caption="කැමරාවෙන් ගත් ඡායාරූපය", width=300)
         
-        if st.button("මෙම Error එක පරීක්ෂා කරන්න (Camera)"):
+    if st.button("මෙම Error එක පරීක්ෂා කරන්න (Camera)"):
             with st.spinner('භාග්‍ය ඡායාරූපය විශ්ලේෂණය කරමින්...'):
                 try:
                     prompt = "මෙම VFD Error Code එක පරීක්ෂා කර, හේතුව සහ විසඳුම සිංහලෙන් පැහැදිලි කරන්න."

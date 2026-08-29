@@ -3,16 +3,16 @@ import google.generativeai as genai
 import os
 from PIL import Image
 
-# 1. API Key එක Streamlit Secrets මඟින් පමණක් ලබා ගැනීම
+# 1. API Key සැකසුම
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# 2. භාග්‍ය AI හි අනන්‍යතාවය සහ කාර්මික විශේෂඥ දැනුම (Zoncn T200 පරාමිතීන් සමඟ)
+# 2. භාග්‍ය AI හි නිවැරදි කාර්මික විශේෂඥ දැනුම (Zoncn T200 Parameters සමඟ)
 system_instruction = (
     "ඔබේ නම 'භාග්‍ය' (Bhagya). ඔබව නිර්මාණය කළේ 'ශුභාග්‍ය' (Shubhagya) විසින්. "
     "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
     "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn (T200 / NZ100), HBD, Delta, Siemens, Hyundai, Parker VFDs, "
     "Servo Motors සහ Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
-    "විශේෂයෙන්ම Zoncn T200 VFD පරාමිතීන් සම්බන්ධයෙන් ඉතා සැලකිලිමත් වන්න: "
+    "විශੇෂයෙන්ම Zoncn T200 VFD පරාමිතීන් සම්බන්ධයෙන් ඉතා සැලකිලිමත් වන්න: "
     "P0.02 යනු Command Source Selection වේ (0: Keypad, 1: Terminal, 2: Communication). "
     "P0.03 යනු Main Frequency Source X Selection වේ (0/1: Digital setting, 2: FIV, 3: FIC, ආදී වශයෙන්). "
     "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් මඟින් හෝ ඡායාරූපයක් මඟින් ගැටලුවක් ඉදිරිපත් කළ විට, "
@@ -38,7 +38,7 @@ with col2:
     st.title("🤖 භාග්‍ය (Bhagya AI)")
     st.caption("Industrial Automation & VFD Troubleshooting Expert")
 
-st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහත ක්‍රම භාවිත කරන්න.")
+st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහت ක්‍රම භාවිත කරන්න.")
 
 # 5. ප්‍රධාන අංශ (Tabs)
 tab1, tab2, tab3, tab4 = st.tabs([

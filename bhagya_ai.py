@@ -4,7 +4,7 @@ import os
 import time
 from PIL import Image
 
-# 1. API Key සැකසුම
+# 1. API Key සැකසුම (Streamlit Secrets හරහා පමණක් කියවීමට සකස් කර ඇත)
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # 2. භාග්‍ය AI හි නිවැරදි කාර්මික විශේෂඥ දැනුම (Zoncn T200 Parameters සමඟ)

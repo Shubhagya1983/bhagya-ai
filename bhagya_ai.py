@@ -6,15 +6,17 @@ from PIL import Image
 # 1. API Key සැකසුම
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# 2. භාග්‍ය AI හි අනන්‍යතාවය සහ කාර්මික විශේෂඥ දැනුම
+# 2. භාග්‍ය AI හි නිවැරදි කාර්මික විශේෂඥ දැනුම (Zoncn T200 Parameters සමඟ)
 system_instruction = (
     "ඔබේ නම 'භාග්‍ය' (Bhagya). ඔබව නිර්මාණය කළේ 'ශුභාග්‍ය' (Shubhagya) විසින්. "
     "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
-    "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFDs, "
+    "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn (T200 / NZ100), HBD, Delta, Siemens, Hyundai, Parker VFDs, "
     "Servo Motors සහ Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
-    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice Input) මඟින් හෝ දුරකථන/පරිගණක ගැලරියෙන්/WhatsApp මඟින් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
-    "ගැටලුවක් ඉදිරිපත් කළ විට, ඊට අදාළ දෝෂය (Fault/Error Code), හේතුව (Reason) සහ නිවැරදි විසඳුම (Solution) "
-    "ඉතා පැහැදිලිව සිංහලෙන් පියවරෙන් පියවර පෙළ (Text) මඟින් ලබා දෙන්න."
+    "විශੇෂයෙන්ම Zoncn T200 VFD පරාමිතීන් සම්බන්ධයෙන් ඉතා සැලකිලිමත් වන්න: "
+    "P0.02 යනු Command Source Selection වේ (0: Keypad, 1: Terminal, 2: Communication). "
+    "P0.03 යනු Main Frequency Source X Selection වේ (0/1: Digital setting, 2: FIV, 3: FIC, ආදී වශයෙන්). "
+    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් මඟින් හෝ ඡායාරූපයක් මඟින් ගැටලුවක් ඉදිරිපත් කළ විට, "
+    "අදාළ VFD අත්පොත්වලට (Manuals) පදනම්ව නිවැරදි පරාමිතීන් සහ තොරතුරු සිංහලෙන් පියවරෙන් පියවර ලබා දෙන්න."
 )
 
 model = genai.GenerativeModel(
@@ -36,9 +38,9 @@ with col2:
     st.title("🤖 භාග්‍ය (Bhagya AI)")
     st.caption("Industrial Automation & VFD Troubleshooting Expert")
 
-st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහਤ ක්‍රම භාවිත කරන්න.")
+st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහت ක්‍රම භාවිත කරන්න.")
 
-# 5. ප්‍රධාන අංශ (Tabs) - Voice Input තබා ඇත, Voice Output (gTTS) ඉවත් කර ඇත
+# 5. ප්‍රධාන අංශ (Tabs)
 tab1, tab2, tab3, tab4 = st.tabs([
     "💬 පෙළින් (Text)", 
     "🎙️ කටහඬින් (Voice Mic)", 
@@ -77,7 +79,6 @@ with tab2:
                     }
                     prompt = "මෙම හඬ පණිවිඩයේ ඇති කාර්මික ගැටලුවට හෝ ප්‍රශ්නයට සිංහලෙන් පැහැදිලි පිළිතුරක් ලබා දෙන්න."
                     response = model.generate_content([prompt, audio_part])
-                    
                     st.success(response.text)
                 except Exception as e:
                     st.error(f"හඬ සැකසීමේ දෝෂයක් මතු විය: {e}")

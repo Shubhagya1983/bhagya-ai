@@ -5,18 +5,29 @@ import io
 import os
 from PIL import Image
 
-# Gemini API Key 
+# 1. API Key සැකසුම (Streamlit Secrets මඟින්)
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# භාග්‍ය AI හි අනන්‍යතාවය සහ කාර්මික දැනුම
-model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    system_instruction="ඔබේ නම 'භාග්‍ය' (Bhagya). ඔබව නිර්මාණය කළේ 'ශුභාග්‍ය' (Shubhagya) විසින්. ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය පිළිබඳ AI සහායකයෙකි. ඔබට Siemens, Mitsubishi, Xinje PLC සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFD සහ servo මෝටර් පිළිබඳ විශේෂඥ දැනුමක් ඇත. පරිශීලකයා සිංහලෙන් හෝ ඉංග්‍රීසියෙන් කතා කරන විට (Voice හෝ Text මඟින්), ඊට අදාළ කාර්මික ගැටලු සඳහා පැහැදිලි පිළිතුරක් සිංහලෙන් (හෝ ඇසූ භාෂාවෙන්) ලබා දෙන්න."
+# 2. භාග්‍ය AI හි අනන්‍යතාවය සහ කාර්මික විශේෂඥ දැනුම
+system_instruction = (
+    "ඔබේ නම 'භාග්‍ය' (Bhagya). ඔබව නිර්මාණය කළේ 'ශුභාග්‍ය' (Shubhagya) විසින්. "
+    "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
+    "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFDs, "
+    "Servo Motors, Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
+    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice) මඟින් හෝ Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් (Photo) මඟින් "
+    "ගැටලුවක් ඉදිරිපත් කළ විට, ඊට අදාළ දෝෂය (Fault/Error Code), හේතුව (Reason) සහ නිවැරදි විසඳුම (Solution) "
+    "ඉතා පැහැදිලිව සිංහලෙන් (හෝ පරිශීලකයා ඇසූ භාෂාවෙන්) පියවරෙන් පියවර ලබා දෙන්න."
 )
 
-st.set_page_config(page_title="Bhagya AI", page_icon="🤖")
+model = genai.GenerativeModel(
+    model_name="gemini-3.6-flash",
+    system_instruction=system_instruction
+)
 
-# ඡායාරූපය සහ මාතෘකාව පෙන්වීම
+# 3. පිටුවේ මූලික සැකසුම් (Page Config)
+st.set_page_config(page_title="Bhagya AI", page_icon="🤖", layout="centered")
+
+# 4. Profile ඡායාරූපය සහ ප්‍රධාන ශීර්ෂය
 col1, col2 = st.columns([1, 4])
 with col1:
     if os.path.exists("profile.jpg"):
@@ -25,12 +36,18 @@ with col1:
         st.write("🧑‍💻")
 with col2:
     st.title("🤖 භාග්‍ය (Bhagya AI)")
+    st.caption("Industrial Automation & VFD Troubleshooting Expert")
 
-st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය කාර්මික සහාය ලබා ගැනීමට Text, Voice හෝ Photo පහසුකම් භාවිත කරන්න.")
+st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහත ඕනෑම ක්‍රමයක් භාවිත කරන්න.")
 
-# ටැබ් ක්‍රමයට ක්‍රියාකාරক 3ක් ලබා දීම
-tab1, tab2, tab3 = st.tabs(["💬 පෙළින් ඇසීමට (Text)", "🎙️ කටහඬින් ඇසීමට (Voice Mic)", "📷 ඡායාරූපයෙන් ඇසීමට (Error Photo)"])
+# 5. ප්‍රධාන අංශ 3 (Tabs)
+tab1, tab2, tab3 = st.tabs([
+    "💬 පෙළින් ඇසීමට (Text)", 
+    "🎙️ කටහඬින් ඇසීමට (Voice Mic)", 
+    "📷 ඡායාරූපයෙන් ඇසීමට (Error Photo)"
+])
 
+# --- TAB 1: TEXT CHAT ---
 with tab1:
     with st.form(key='chat_form'):
         user_input = st.text_input("ඔබේ ගැටලුව මෙතන ලියන්න (සිංහලෙන් හෝ ඉංග්‍රීසියෙන්):")
@@ -47,29 +64,26 @@ with tab1:
                     audio_fp = io.BytesIO()
                     tts.write_to_fp(audio_fp)
                     st.audio(audio_fp, format='audio/mp3', autoplay=True)
-                except Exception as e:
+                except Exception:
                     pass
             except Exception as e:
                 st.error(f"දෝෂයක් මතු විය: {e}")
 
+# --- TAB 2: VOICE MIC INPUT ---
 with tab2:
     st.write("🎙️ පහත ඇති **Mic අයිකනය** ඔබා සිංහලෙන් හෝ ඉංග්‍රීසියෙන් ඔබේ ගැටලුව කතා කරන්න:")
-    
-    # Streamlit Audio Input (Mic Icon එක)
-    audio_file = st.audio_input("කතා කරන්න මෙතන ඔබන්න")
+    audio_file = st.audio_input("කතා කිරීමට මෙතන ඔබන්න")
     
     if audio_file is not None:
         st.audio(audio_file)
         if st.button("මෙම හඬ පණිවිඩය යවන්න"):
             with st.spinner('භාග්‍ය ඔබේ හඬ අසා පිළිතුරු සකසමින්...'):
                 try:
-                    # හඬ ගොනුව Gemini වෙත යැවීම සඳහා සකස් කිරීම
                     audio_bytes = audio_file.read()
                     audio_part = {
                         "mime_type": "audio/wav",
                         "data": audio_bytes
                     }
-                    
                     prompt = "මෙම හඬ පණිවිඩයේ ඇති කාර්මික ගැටලුවට හෝ ප්‍රශ්නයට සිංහලෙන් පැහැදිලි පිළිතුරක් ලබා දෙන්න."
                     response = model.generate_content([prompt, audio_part])
                     
@@ -80,15 +94,16 @@ with tab2:
                         audio_fp = io.BytesIO()
                         tts.write_to_fp(audio_fp)
                         st.audio(audio_fp, format='audio/mp3', autoplay=True)
-                    except Exception as e:
+                    except Exception:
                         pass
                 except Exception as e:
                     st.error(f"හඬ සැකසීමේ දෝෂයක් මතු විය: {e}")
 
+# --- TAB 3: CAMERA & IMAGE INPUT ---
 with tab3:
-    st.write("VFD එකේ Error Code එක හෝ යන්ත්‍රයේ පින්තූරයක් මෙතැනින් ලබා දෙන්න:")
+    st.write("📷 VFD එකේ Error Code එක හෝ යන්ත්‍රයේ දෝෂය පෙන්වන පින්තූරයක් ලබා දෙන්න:")
     camera_photo = st.camera_input("කැමරාව ක්‍රියාත්මක කරන්න")
-    uploaded_photo = st.file_uploader("অথবা ෆයිල් එකකින් Upload කරන්න", type=["jpg", "jpeg", "png"])
+    uploaded_photo = st.file_uploader("නැතහොත් ගැලරියෙන් Upload කරන්න", type=["jpg", "jpeg", "png"])
     
     image_to_analyze = camera_photo if camera_photo else uploaded_photo
     
@@ -99,7 +114,11 @@ with tab3:
         if st.button("මෙම Error එක පරීක්ෂා කරන්න"):
             with st.spinner('භාග්‍ය ඡායාරූපය විශ්ලේෂණය කරමින්...'):
                 try:
-                    prompt = "මෙම VFD Error Code එක හෝ යන්ත්‍රයේ දෝෂය පරීක්ෂා කර, මෙහි ඇති දෝෂයට හේතුව (Reason) සහ ඊට දිය යුතු විසඳුම (Solution) සිංහලෙන් පැහැදිලි කරන්න."
+                    prompt = (
+                        "මෙම VFD Error Code එක හෝ යන්ත්‍රයේ ඡායාරූපය පරීක්ෂා කර, "
+                        "මෙහි ඇති Error Code එක, ඊට හේතුව (Reason) සහ ඊට අදාළ විසඳුම (Solution) "
+                        "සිංහලෙන් පැහැදිලිව පියවරෙන් පියවර විස්තර කරන්න."
+                    )
                     response = model.generate_content([prompt, img])
                     
                     st.success(response.text)
@@ -109,7 +128,7 @@ with tab3:
                         audio_fp = io.BytesIO()
                         tts.write_to_fp(audio_fp)
                         st.audio(audio_fp, format='audio/mp3', autoplay=True)
-                    except Exception as e:
+                    except Exception:
                         pass
                 except Exception as e:
                     st.error(f"දෝෂයක් මතු විය: {e}")

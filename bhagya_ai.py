@@ -14,7 +14,7 @@ system_instruction = (
     "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
     "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFDs, "
     "Servo Motors සහ Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
-    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice) මඟින් හෝ WhatsApp/ගැලරියෙන් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
+    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice) මඟින් හෝ දුරකථන/පරිගණක ගැලරියෙන්/WhatsApp මඟින් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
     "ගැටලුවක් ඉදිරිපත් කළ විට, ඊට අදාළ දෝෂය (Fault/Error Code), හේතුව (Reason) සහ නිවැරදි විසඳුම (Solution) "
     "ඉතා පැහැදිලිව සිංහලෙන් පියවරෙන් පියවර ලබා දෙන්න."
 )
@@ -40,12 +40,12 @@ with col2:
 
 st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහත ඕනෑම ක්‍රමයක් භාවිත කරන්න.")
 
-# 5. ප්‍රධාන අංශ (Tabs) - WhatsApp ෆොටෝ දැමීමට විශේෂ Tab එකක් සමඟ
+# 5. ප්‍රධාන අංශ (Tabs)
 tab1, tab2, tab3, tab4 = st.tabs([
     "💬 පෙළින් (Text)", 
     "🎙️ කටහඬින් (Voice)", 
     "📷 කැමරාවෙන් (Camera)",
-    "📱 WhatsApp / ගැලරි Photo"
+    "📱 ගැලරියෙන්/WhatsApp Photo"
 ])
 
 # --- TAB 1: TEXT CHAT ---
@@ -126,23 +126,25 @@ with tab3:
                 except Exception as e:
                     st.error(f"දෝෂයක් මතු විය: {e}")
 
-# --- TAB 4: WHATSAPP / GALLERY PHOTO UPLOADER ---
+# --- TAB 4: GALLERY / WHATSAPP PHOTO UPLOADER ---
 with tab4:
-    st.write("📱 **WhatsApp එකෙන් ලැබුණු හෝ Phone එකේ Save කරගත් Error පින්තූර මෙතැනට Upload කරන්න:**")
-    whatsapp_upload = st.file_uploader(
-        "WhatsApp Error Photo එක මෙතැනට Drag කරන්න හෝ Browse කරන්න", 
-        type=["jpg", "jpeg", "png", "webp"]
+    st.write("📱 **Phone එකේ හෝ PC ගැලරියේ (WhatsApp ඇතුළුව) Save කරගත් Error පින්තූර මෙතැනට Upload කරන්න:**")
+    
+    gallery_upload = st.file_uploader(
+        "ဓာරූපයක් තෝරා ගැනීමට මෙතන ක්ලික් කරන්න (Browse Files)", 
+        type=["jpg", "jpeg", "png", "webp"],
+        accept_multiple_files=False
     )
     
-    if whatsapp_upload is not None:
-        img = Image.open(whatsapp_upload)
-        st.image(img, caption="Uploaded WhatsApp Error Photo", width=350)
+    if gallery_upload is not None:
+        img = Image.open(gallery_upload)
+        st.image(img, caption="Uploaded Error Photo", width=350)
         
-        if st.button("🔍 WhatsApp ෆොටෝ එක Analyze කරන්න"):
-            with st.spinner('භාග්‍ය WhatsApp ඡායාරූපය පරීක්ෂා කරමින්...'):
+        if st.button("🔍 මෙම ඡායාරූපය Analyze කරන්න"):
+            with st.spinner('භාග්‍ය ඡායාරූපය පරීක්ෂා කරමින්...'):
                 try:
                     prompt = (
-                        "මෙය WhatsApp හරහා ලැබුණු VFD Error එකක හෝ කාර්මික දෝෂයක ඡායාරූපයකි. "
+                        "මෙය VFD Error එකක හෝ කාර්මික දෝෂයක ඡායාරූපයකි. "
                         "මෙහි පෙනෙන Error Code එක හඳුනාගෙන, ඊට හේතුව (Reason) සහ කළ යුතු නිවැරදි කිරීම්/විසඳුම (Solution) "
                         "සිංහලෙන් ඉතා පැහැදිලිව පියවරෙන් පියවර විස්තර කරන්න."
                     )

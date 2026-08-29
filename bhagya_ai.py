@@ -12,9 +12,9 @@ system_instruction = (
     "ඔබ LB Engineering ආයතනයේ කාර්මික ස්වයංක්‍රීයකරණය (Industrial Automation) පිළිබඳ විශේෂඥ AI සහායකයෙකි. "
     "ඔබට Siemens, Mitsubishi, Xinje PLCs සහ Zoncn, HBD, Delta, Siemens, Hyundai, Parker VFDs, "
     "Servo Motors සහ Drives පිළිබඳ ගැඹුරු තාක්ෂණික දැනුමක් ඇත. "
-    "පරිශීලකයා පෙළ මඟින් හෝ දුරකථන/පරිගණක ගැලරියෙන්/WhatsApp මඟින් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
+    "පරිශීලකයා පෙළ මඟින්, හඬ පණිවිඩයක් (Voice Input) මඟින් හෝ දුරකථන/පරිගණක ගැලරියෙන්/WhatsApp මඟින් එවන ලද VFD Error Code එකක/යන්ත්‍රයක ඡායාරූපයක් මඟින් "
     "ගැටලුවක් ඉදිරිපත් කළ විට, ඊට අදාළ දෝෂය (Fault/Error Code), හේතුව (Reason) සහ නිවැරදි විසඳුම (Solution) "
-    "ඉතා පැහැදිලිව සිංහලෙන් පියවරෙන් පියවර ලබා දෙන්න."
+    "ඉතා පැහැදිලිව සිංහලෙන් පියවරෙන් පියවර පෙළ (Text) මඟින් ලබා දෙන්න."
 )
 
 model = genai.GenerativeModel(
@@ -36,11 +36,12 @@ with col2:
     st.title("🤖 භාග්‍ය (Bhagya AI)")
     st.caption("Industrial Automation & VFD Troubleshooting Expert")
 
-st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහත ක්‍රම භාවිත කරන්න.")
+st.write("ආයුබෝවන් ශුභාග්‍ය! මම භාග්‍ය. ඔබට අවශ්‍ය තාක්ෂණික සහාය ලබා ගැනීමට පහਤ ක්‍රම භාවිත කරන්න.")
 
-# 5. ප්‍රධාන අංශ 3 (Tabs) - Voice ඉවත් කර ඇත
-tab1, tab2, tab3 = st.tabs([
+# 5. ප්‍රධාන අංශ (Tabs) - Voice Input තබා ඇත, Voice Output (gTTS) ඉවත් කර ඇත
+tab1, tab2, tab3, tab4 = st.tabs([
     "💬 පෙළින් (Text)", 
+    "🎙️ කටහඬින් (Voice Mic)", 
     "📷 කැමරාවෙන් (Camera)",
     "📱 ගැලරියෙන්/WhatsApp Photo"
 ])
@@ -59,8 +60,30 @@ with tab1:
             except Exception as e:
                 st.error(f"දෝෂයක් මතු විය: {e}")
 
-# --- TAB 2: CAMERA INPUT ---
+# --- TAB 2: VOICE MIC INPUT ---
 with tab2:
+    st.write("🎙️ පහත ඇති **Mic අයිකනය** ඔබා සිංහලෙන් හෝ ඉංග්‍රීසියෙන් ඔබේ ගැටලුව කතා කරන්න:")
+    audio_file = st.audio_input("කතා කිරීමට මෙතන ඔබන්න")
+    
+    if audio_file is not None:
+        st.audio(audio_file)
+        if st.button("මෙම හඬ පණිවිඩය යවන්න"):
+            with st.spinner('භාග්‍ය ඔබේ හඬ අසා පිළිතුරු සකසමින්...'):
+                try:
+                    audio_bytes = audio_file.read()
+                    audio_part = {
+                        "mime_type": "audio/wav",
+                        "data": audio_bytes
+                    }
+                    prompt = "මෙම හඬ පණිවිඩයේ ඇති කාර්මික ගැටලුවට හෝ ප්‍රශ්නයට සිංහලෙන් පැහැදිලි පිළිතුරක් ලබා දෙන්න."
+                    response = model.generate_content([prompt, audio_part])
+                    
+                    st.success(response.text)
+                except Exception as e:
+                    st.error(f"හඬ සැකසීමේ දෝෂයක් මතු විය: {e}")
+
+# --- TAB 3: CAMERA INPUT ---
+with tab3:
     st.write("📷 කැමරාවෙන් VFD Error එකක ඡායාරූපයක් ලබා ගන්න:")
     camera_photo = st.camera_input("කැමරාව ක්‍රියාත්මක කරන්න")
     
@@ -77,8 +100,8 @@ with tab2:
                 except Exception as e:
                     st.error(f"දෝෂයක් මතු විය: {e}")
 
-# --- TAB 3: GALLERY / WHATSAPP PHOTO UPLOADER ---
-with tab3:
+# --- TAB 4: GALLERY / WHATSAPP PHOTO UPLOADER ---
+with tab4:
     st.write("📱 **Phone එකේ හෝ PC ගැලරියේ (WhatsApp ඇතුළුව) Save කරගත් Error පින්තූර මෙතැනට Upload කරන්න:**")
     
     gallery_upload = st.file_uploader(
